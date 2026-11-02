@@ -194,7 +194,7 @@ Profile sensitivity key for LGBTQ+ is "Homosexuality" (not "LGBTQ+ Themes") — 
 
 **compare** — CSS fixed
 
-**history** — not audited
+**history** — CSS fixed
 
 **guestSetup** — not audited
 
