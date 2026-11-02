@@ -67,9 +67,11 @@ function fromGoogle(item: GoogleVolume): Book | null {
   };
 }
 
+// country=US: Google Books refuses requests it can't place geographically (VPNs,
+// some mobile carriers) unless a country is given.
 async function searchGoogle(query: string): Promise<Book | null> {
   const q = isIsbn(query) ? `isbn:${cleanIsbn(query)}` : query;
-  const data = await getJson(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=5&printType=books${GOOGLE_BOOKS_KEY ? `&key=${GOOGLE_BOOKS_KEY}` : ""}`);
+  const data = await getJson(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=5&printType=books&country=US${GOOGLE_BOOKS_KEY ? `&key=${GOOGLE_BOOKS_KEY}` : ""}`);
   for (const item of data.items || []) {
     const book = fromGoogle(item);
     if (book) return book;
