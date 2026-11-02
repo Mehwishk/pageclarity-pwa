@@ -88,3 +88,124 @@
 .history-status .all-clear { background: #f0fdf4; color: #16a34a; }
 .history-status .review { background: #fffbeb; color: #d97706; }
 .history-status .flagged { background: #fef2f2; color: #dc2626; }
+
+/* ===== Real scanning: camera feed, fallback, results states ===== */
+.camera-feed {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.camera-live .camera-feed { opacity: 1; }
+.camera-live > p {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  text-align: center;
+  color: #fff;
+  text-shadow: 0 1px 3px #000c;
+}
+.camera-fallback {
+  position: relative;
+  z-index: 1;
+  width: min(100% - 32px, 320px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
+}
+.camera-fallback p {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #ffffffb3;
+}
+.camera-fallback div {
+  display: flex;
+  gap: 8px;
+}
+.camera-fallback input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #ffffff33;
+  background: #ffffff14;
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+}
+.camera-fallback input::placeholder { color: #ffffff73; }
+.camera-fallback button {
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--teal);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.camera-message {
+  position: relative;
+  z-index: 1;
+  max-width: 300px;
+  font-size: 12px;
+  text-align: center;
+  color: var(--amber);
+}
+.shutter:disabled,
+.mini-camera-action:disabled { opacity: 0.5; cursor: default; }
+.finder > button:disabled { opacity: 0.45; cursor: default; }
+
+.book-cover.has-image {
+  padding: 0;
+  overflow: hidden;
+  background: var(--navy);
+}
+.book-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.analysis-error {
+  margin: 16px;
+  padding: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px;
+  border: 1px solid #f5b94066;
+  border-radius: 14px;
+  background: #fffbeb;
+  color: #92400e;
+}
+.analysis-error > div {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.analysis-error strong { color: var(--ink); font-size: 15px; }
+.analysis-error p { font-size: 13px; line-height: 1.5; color: var(--mid); }
+.analysis-error button {
+  padding: 8px 14px;
+  border: 1px solid var(--teal);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--teal);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.loading-error .primary-button { margin-top: 20px; width: 100%; }
+.loading-error p { max-width: 280px; }

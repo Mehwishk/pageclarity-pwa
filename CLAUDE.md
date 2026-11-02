@@ -17,8 +17,9 @@ Results are filtered through a **Profile Lens**: a parent sets up a child profil
 - **Fonts:** Google Fonts — Inter (sans) + Lora (serif)
 - **Styling:** Single `src/index.css` — no CSS framework, pure custom properties
 - **State:** React `useState` + `localStorage` for auth, profiles, accessibility prefs
-- **No backend yet** — all data is mocked/hardcoded; APIs are next milestone
-- **Dev:** `npm run dev` → localhost:5173 | **Build:** `npm run build`
+- **Backend:** Vercel serverless functions in `api/` (Claude API via `@anthropic-ai/sdk`). Everything else is still mocked (auth, history, compare)
+- **Scanning:** `@zxing/browser` reads EAN-13 ISBN barcodes from the camera
+- **Dev:** `npm run dev` → localhost:5173 (UI only; `/api` needs `vercel dev`) | **Build:** `npm run build`
 
 ## File Locations
 
@@ -41,6 +42,23 @@ Repo: github.com/Mehwishk/pageclarity-pwa (branch: main)
 - `npm run build` -> installable PWA in `dist/`
 - `npm run build:preview` -> static preview in `preview-dist/` (relative paths, no service worker),
   used to publish the shareable preview link
+
+## Scan & Analysis Pipeline
+
+```
+Home search / shelf chips / camera ISBN / manual ISBN / cover photo
+  -> App.startBookAnalysis(query)          query = ISBN or "title author"; no query = Charlotte's Web demo
+  -> guestSetup (guests only) -> loading
+  -> lookupBook(query)                     src/bookService.ts: Google Books, then Open Library
+  -> analyzeBook(book) -> POST /api/analyze   api/analyze.ts: Claude, structured JSON output
+  -> results                               Results shows book + analysis, or an error card with retry
+Cover mode: shutter -> POST /api/identify-cover (photo -> title/author) -> same pipeline
+```
+
+- `api/_lib/claude.ts` holds the model, the system prompt and the zod schema for the analysis.
+- Profile score on results is computed from the analysis (status weights, doubled for emphasized categories).
+- Env vars (see `.env.example`): `ANTHROPIC_API_KEY` (server only), optional `VITE_GOOGLE_BOOKS_KEY`, optional `VITE_API_BASE`.
+- The camera needs HTTPS and a real browser; it does not work inside the claude.ai preview link.
 
 ## CSS System
 
@@ -116,7 +134,7 @@ Repo: github.com/Mehwishk/pageclarity-pwa (branch: main)
 
 .auth-screen .auth-top .auth-body .auth-field .auth-trust .auth-switch
 
-**bookstore ✓** Camera scanner: ISBN barcode mode or book cover mode. Shutter button, scan tray with queued books, compare shortcut.
+**bookstore ✓** Live camera scanner: ISBN barcodes scan automatically; cover mode sends a photo to /api/identify-cover. Falls back to typed ISBN when there is no camera. Scan tray and compare are still demo data.
 
 .bookstore-screen .camera-header .camera-mode-switch .camera-view .shutter-row .scan-tray
 
@@ -213,8 +231,9 @@ Profile sensitivity key for LGBTQ+ is "Homosexuality" (not "LGBTQ+ Themes") — 
 ## Pending / Roadmap
 
 - Audit remaining screens for CSS class-name mismatches (same fix pattern above)
-- Wire up **Google Books API** — real ISBN / title → book metadata
-- Wire up **Claude API** — AI content analysis for the 6 categories
+- ~~Google Books API~~ and ~~Claude API analysis~~ — done (see Scan & Analysis Pipeline)
+- Save real results to History (`pageclarity-history`) and the compare tray
+- Rate-limit `/api/*` before public launch (anyone can call them and spend API credit)
 - Set up **Supabase** — cache analysis results, real auth, sync profiles across devices
 - COPPA compliance audit — no child PII collected or stored server-side
 - Connect **pageclarity.app** domain + deploy to production

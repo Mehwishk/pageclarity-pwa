@@ -1,4 +1,7 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { BrowserMultiFormatReader, type IScannerControls } from "@zxing/browser";
+import { BarcodeFormat, DecodeHintType } from "@zxing/library";
+import { analyzeBook, cleanIsbn, identifyCover, isIsbn, lookupBook, type Analysis, type Book } from "./bookService";
 import logoMark from "./assets/pageclarity-logo-mark.svg";
 
 type Screen = "home" | "guestSetup" | "loading" | "results" | "history" | "settings" | "profile" | "accessibility" | "privacy" | "privacyPolicy" | "sources" | "contact" | "login" | "signup" | "bookstore" | "compare";
@@ -93,7 +96,12 @@ const categories: { name: string; status: string; tone: string; icon: IconName; 
   { name: "Mature Themes", status: "Mild", tone: "mild", icon: "sparkle", presence: "Recurring", intensity: "Gentle", context: "The story includes mortality, grief, and accepting the natural cycle of life." },
 ];
 
-function Home({ onScan, onProfile, onBookstore, onLogin, onSignup }: { onScan: () => void; onProfile: () => void; onBookstore: () => void; onLogin: () => void; onSignup: () => void }) {
+function Home({ onSearch, onProfile, onBookstore, onLogin, onSignup }: { onSearch: (query: string) => void; onProfile: () => void; onBookstore: () => void; onLogin: () => void; onSignup: () => void }) {
+  const [query, setQuery] = useState("");
+  const submitSearch = (event?: FormEvent) => {
+    event?.preventDefault();
+    if (query.trim()) onSearch(query.trim());
+  };
   type ChildProfile = { id: number; name: string; age: string; values: string };
   const [profiles] = useState<ChildProfile[]>(() => {
     try {
@@ -144,17 +152,17 @@ function Home({ onScan, onProfile, onBookstore, onLogin, onSignup }: { onScan: (
         </div>
         <button className="scan-trigger" onClick={onBookstore} aria-label="Open rapid book scanner"><Icon name="scan" size={23} /></button>
       </section>
-      <label className="finder">
+      <form className="finder" onSubmit={submitSearch}>
         <Icon name="search" />
-        <span><small>Rather type it?</small><input aria-label="Search books" placeholder="Title, author, or ISBN" /></span>
-        <button aria-label="Submit search" onClick={onScan}><Icon name="arrow" /></button>
-      </label>
+        <span><small>Rather type it?</small><input id="book-search" aria-label="Search books" placeholder="Title, author, or ISBN" value={query} onChange={(event) => setQuery(event.target.value)} enterKeyHint="search" /></span>
+        <button type="submit" aria-label="Submit search" disabled={!query.trim()}><Icon name="arrow" /></button>
+      </form>
       <section className="shelf-section">
         <div className="section-title"><h2>On parents’ shelves</h2><span>Explore</span></div>
         <div className="book-chips">
-          <button onClick={onScan}><i className="chip-cover wonder">W</i><span><strong>Wonder</strong><small>R. J. Palacio</small></span></button>
-          <button onClick={onScan}><i className="chip-cover giver">G</i><span><strong>The Giver</strong><small>Lois Lowry</small></span></button>
-          <button onClick={onScan}><i className="chip-cover wild">W</i><span><strong>Wild Robot</strong><small>Peter Brown</small></span></button>
+          <button onClick={() => onSearch("Wonder R. J. Palacio")}><i className="chip-cover wonder">W</i><span><strong>Wonder</strong><small>R. J. Palacio</small></span></button>
+          <button onClick={() => onSearch("The Giver Lois Lowry")}><i className="chip-cover giver">G</i><span><strong>The Giver</strong><small>Lois Lowry</small></span></button>
+          <button onClick={() => onSearch("The Wild Robot Peter Brown")}><i className="chip-cover wild">W</i><span><strong>Wild Robot</strong><small>Peter Brown</small></span></button>
         </div>
       </section>
       {switcherOpen && <div className="sheet-layer" onClick={() => setSwitcherOpen(false)}>
@@ -220,22 +228,63 @@ function GuestSetup({ onBack, onContinue }: { onBack: () => void; onContinue: ()
   );
 }
 
-function Loading() {
+const loadingSteps = [
+  { title: "Finding the book...", detail: "Matching the ISBN or title" },
+  { title: "Analyzing content...", detail: "Checking 6 content categories" },
+];
+
+function Loading({ step = 1, error, onBack }: { step?: number; error?: string | null; onBack?: () => void }) {
+  const current = loadingSteps[Math.min(step, loadingSteps.length - 1)];
+  if (error) {
+    return (
+      <main className="screen loading-screen">
+        <Logo />
+        <div className="loading-content loading-error" role="alert">
+          <div className="loader"><div><Icon name="search" size={30} /></div></div>
+          <h1>We couldn’t find that book</h1>
+          <p>{error}</p>
+          <PrimaryButton onClick={onBack}>Try another search</PrimaryButton>
+        </div>
+      </main>
+    );
+  }
   return (
     <main className="screen loading-screen">
       <Logo />
-      <div className="loading-content">
+      <div className="loading-content" aria-live="polite">
         <div className="loader"><div><Icon name="book" size={30} /></div></div>
-        <h1>Analyzing content...</h1>
-        <p>Checking 6 content categories</p>
-        <div className="loading-steps"><span className="done" /><span className="done" /><span /><span /></div>
+        <h1>{current.title}</h1>
+        <p>{current.detail}</p>
+        <div className="loading-steps">{[0, 1, 2, 3].map((index) => <span key={index} className={index < (step + 1) * 2 ? "done" : ""} />)}</div>
       </div>
-      <p className="loading-note">This usually takes just a few seconds.</p>
+      <p className="loading-note">{step === 0 ? "This usually takes just a few seconds." : "A full analysis can take up to 30 seconds."}</p>
     </main>
   );
 }
 
-function Results({ onBack, onScan, onCompare, onFlag }: { onBack: () => void; onScan: () => void; onCompare: () => void; onFlag: () => void }) {
+const categoryIcons: Record<string, IconName> = Object.fromEntries(categories.map((item) => [item.name, item.icon]));
+const statusTone: Record<string, string> = { None: "clear", Mild: "mild", Present: "present", Moderate: "present", Strong: "strong" };
+const statusWeight: Record<string, number> = { None: 0, Mild: 4, Present: 6, Moderate: 10, Strong: 16 };
+const confidenceLabel = { high: "High", medium: "Medium", low: "Low" } as const;
+
+function Results({ onBack, onScan, onCompare, onFlag, book, analysis, analysisError, onRetry }: { onBack: () => void; onScan: () => void; onCompare: () => void; onFlag: () => void; book?: Book | null; analysis?: Analysis | null; analysisError?: string | null; onRetry?: () => void }) {
+  // Real analysis when available; otherwise the built-in Charlotte's Web demo.
+  const resultCategories: typeof categories = analysis
+    ? analysis.categories.map((item) => ({ ...item, icon: categoryIcons[item.name] || "book", tone: statusTone[item.status] || "mild" }))
+    : categories;
+  const realScore = (emphasis: string[]) => {
+    const penalty = resultCategories.reduce((sum, item) => sum + (statusWeight[item.status] || 0) * (emphasis.includes(item.name) ? 2 : 1), 0);
+    return Math.max(30, Math.min(99, 100 - penalty));
+  };
+  const realVerdict = (score: number) => score >= 85 ? "Light guidance" : score >= 70 ? "Review together" : "Review first";
+  const withRealScore = <T extends { score: number; verdict: string; emphasis: string[] }>(lens: T): T => {
+    if (!analysis) return lens;
+    const score = realScore(lens.emphasis);
+    return { ...lens, score, verdict: realVerdict(score) };
+  };
+  const clearCount = resultCategories.filter((item) => item.status === "None").length;
+  const displayTitle = book?.title || "Charlotte’s Web";
+  const displayAuthor = book ? book.authors.join(", ") || "Unknown author" : "E. B. White";
   const [selectedFlag, setSelectedFlag] = useState<(typeof categories)[number] | null>(null);
   const [feedbackFlag, setFeedbackFlag] = useState<string | null>(null);
   const [feedbackType, setFeedbackType] = useState("Inaccurate severity");
@@ -259,14 +308,14 @@ function Results({ onBack, onScan, onCompare, onFlag }: { onBack: () => void; on
   const lensCatalog = [
     { name: "Moderate", short: "Balanced preset", score: 82, verdict: "Light guidance", emphasis: ["Violence", "Mature Themes"] },
     { name: "Conservative", short: "Values template", score: 70, verdict: "Review first", emphasis: ["Sexual Content", "Language", "LGBTQ+ Themes", "Mature Themes"] },
-  ];
+  ].map(withRealScore);
   const categorySettingNames: Record<string, string> = { "LGBTQ+ Themes": "Homosexuality" };
-  const customEmphasis = categories.filter((item) => activeFamilyProfile.sensitivities?.[categorySettingNames[item.name] || item.name] !== 2).map((item) => item.name);
-  const savedLens = activeFamilyProfile.name === "Guest"
+  const customEmphasis = resultCategories.filter((item) => activeFamilyProfile.sensitivities?.[categorySettingNames[item.name] || item.name] !== 2).map((item) => item.name);
+  const savedLens = withRealScore(activeFamilyProfile.name === "Guest"
     ? { name: "Guest", short: "One-time choices", score: Math.max(64, 90 - (guestContext?.categories.length || 2) * 3), verdict: "Guest guidance", emphasis: guestContext?.categories || ["Violence", "Mature Themes"] }
     : activeFamilyProfile.values === "Custom"
     ? { name: "Custom", short: "Family-defined", score: Math.max(64, 90 - customEmphasis.length * 3), verdict: customEmphasis.length > 3 ? "Review together" : "Light guidance", emphasis: customEmphasis }
-    : lensCatalog.find((item) => item.name === activeFamilyProfile.values) || lensCatalog[0];
+    : lensCatalog.find((item) => item.name === activeFamilyProfile.values) || lensCatalog[0]);
   const profiles = [
     { ...savedLens, name: activeFamilyProfile.name === "Guest" ? "Guest mode" : `${activeFamilyProfile.name}’s Profile`, short: activeFamilyProfile.name === "Guest" ? "Balanced defaults · No profile" : `${activeFamilyProfile.values} · Active child`, savedValues: activeFamilyProfile.values },
     ...lensCatalog.map((item) => ({ ...item, savedValues: item.name })),
@@ -291,9 +340,10 @@ function Results({ onBack, onScan, onCompare, onFlag }: { onBack: () => void; on
       <Header title="Book Results" onBack={onBack} action={<button className="icon-button" aria-label="Share"><Icon name="share" /></button>} />
       <div className="scroll-content">
         <section className="result-hero">
-          <div className="result-backdrop"><span>CHARLOTTE’S WEB</span></div>
-          <div className="book-cover"><span>CHARLOTTE’S</span><Icon name="sparkle" size={34} /><strong>WEB</strong><small>E. B. WHITE</small></div>
-          <div className="book-info"><span className="eyebrow">ANALYSIS COMPLETE</span><h1>Charlotte’s<br />Web</h1><p>E. B. White · 1952</p><span className="age-badge">{guestContext ? `Viewed for age ${guestContext.age}` : "Best for ages 8–12"}</span></div>
+          <div className="result-backdrop"><span>{displayTitle.toUpperCase()}</span></div>
+          {book ? <div className={`book-cover ${book.coverUrl ? "has-image" : ""}`}>{book.coverUrl ? <img src={book.coverUrl} alt={`Cover of ${book.title}`} /> : <><Icon name="book" size={34} /><strong>{book.title.toUpperCase()}</strong><small>{displayAuthor.toUpperCase()}</small></>}</div>
+            : <div className="book-cover"><span>CHARLOTTE’S</span><Icon name="sparkle" size={34} /><strong>WEB</strong><small>E. B. WHITE</small></div>}
+          <div className="book-info"><span className="eyebrow">{book ? (analysis ? "ANALYSIS COMPLETE" : "BOOK FOUND") : "SAMPLE ANALYSIS"}</span><h1>{book ? book.title : <>Charlotte’s<br />Web</>}</h1><p>{book ? [displayAuthor, book.year].filter(Boolean).join(" · ") : "E. B. White · 1952"}</p>{(analysis || !book) && <span className="age-badge">{guestContext ? `Viewed for age ${guestContext.age}` : `Best for ages ${analysis?.ageRange || "8–12"}`}</span>}</div>
         </section>
         {activeFamilyProfile.name === "Guest" ? <div className="profile-lens guest-result-lens">
           <span><small>VIEWED THROUGH</small><strong>Guest choices</strong></span>
@@ -303,14 +353,19 @@ function Results({ onBack, onScan, onCompare, onFlag }: { onBack: () => void; on
           <span className="lens-action">Change lens <Icon name="chevron" size={14} /></span>
         </button>}
         {activeFamilyProfile.name === "Guest" && <p className="profile-nudge">Create a profile to save sensitivities and see personalized age guidance.</p>}
+        {book && !analysis ? <section className="analysis-error" role="alert">
+          <Icon name="sparkle" size={22} />
+          <div><strong>The content analysis didn’t load</strong><p>{analysisError || "The analysis service isn’t reachable right now."}</p></div>
+          {onRetry && <button onClick={onRetry}>Try again</button>}
+        </section> : <>
         <section className="clarity-strip">
           <div><span className="score">{profile.score}</span><small>PROFILE<br />MATCH</small></div>
           <p>{profile.verdict} for {activeFamilyProfile.name}. The factual book analysis remains unchanged.</p>
         </section>
         <section className="spectrum">
-          <div className="spectrum-heading"><div><span className="eyebrow">CONTENT SPECTRUM</span><h2>What’s in the story</h2></div><span className="clear-count"><Icon name="check" size={14} /> 3 all clear</span></div>
+          <div className="spectrum-heading"><div><span className="eyebrow">CONTENT SPECTRUM</span><h2>What’s in the story</h2></div><span className="clear-count"><Icon name="check" size={14} /> {clearCount} all clear</span></div>
           <div className="spectrum-grid">
-            {categories.map((item, index) => <button className={`spectrum-tile tile-${index + 1} ${profile.emphasis.includes(item.name) ? "lens-emphasis" : ""}`} key={item.name} onClick={() => setSelectedFlag(item)}>
+            {resultCategories.map((item, index) => <button className={`spectrum-tile tile-${index + 1} ${profile.emphasis.includes(item.name) ? "lens-emphasis" : ""}`} key={item.name} onClick={() => setSelectedFlag(item)}>
               <div className="tile-top"><span><Icon name={item.icon} size={18} /></span><small className={`status ${item.tone}`}>{item.status}</small></div>
               <strong>{item.name}</strong>
               <div className={`intensity ${item.tone}`}><i /><i /><i /><i /></div>
@@ -319,20 +374,23 @@ function Results({ onBack, onScan, onCompare, onFlag }: { onBack: () => void; on
             </button>)}
           </div>
         </section>
-        <div className="editorial-note"><span>THE SHORT VERSION</span><p>This classic explores friendship and loss, including the natural death of a beloved character.</p><i>PC</i></div>
+        <div className="editorial-note"><span>THE SHORT VERSION</span><p>{analysis ? analysis.summary : "This classic explores friendship and loss, including the natural death of a beloved character."}</p><i>PC</i></div>
         <section className="discussion-block">
           <span className="eyebrow">READ TOGETHER</span>
           <h2>Conversation starters</h2>
-          <button><span>01</span>Why does Charlotte choose to help Wilbur?</button>
-          <button><span>02</span>How does the story help us think about saying goodbye?</button>
+          {(analysis ? analysis.conversationStarters : ["Why does Charlotte choose to help Wilbur?", "How does the story help us think about saying goodbye?"]).map((question, index) => <button key={question}><span>{String(index + 1).padStart(2, "0")}</span>{question}</button>)}
         </section>
-        <section className="trust-block">
+        {analysis ? <section className="trust-block">
+          <div><span className="trust-score">{confidenceLabel[analysis.confidence]}</span><span><strong>{confidenceLabel[analysis.confidence]} confidence</strong><small>{analysis.known ? "AI analysis generated just now" : "Limited: this book isn’t well known to the AI"}</small></span></div>
+          <dl><div><dt>Edition</dt><dd>{[book?.publisher, book?.year].filter(Boolean).join(", ") || "Not listed"}</dd></div><div><dt>ISBN</dt><dd>{book?.isbn || "Not listed"}</dd></div><div><dt>Community</dt><dd>No reviews yet</dd></div></dl>
+        </section> : <section className="trust-block">
           <div><span className="trust-score">94%</span><span><strong>High confidence</strong><small>Analysis updated today</small></span></div>
           <dl><div><dt>Edition</dt><dd>HarperCollins, 2012</dd></div><div><dt>Sources checked</dt><dd>6 trusted sources</dd></div><div><dt>Community</dt><dd>128 confirmations</dd></div></dl>
-        </section>
+        </section>}
+        </>}
         <aside className="result-disclaimer">
           <Icon name="book" size={17} />
-          <p>Analysis uses public book descriptions and reviews. We haven’t independently read every book, and AI may miss nuance. <button onClick={onFlag}>Flag it for review.</button></p>
+          <p>{analysis ? "This analysis was written by AI from what it knows about the book and the publisher’s description. It can miss nuance or be wrong." : "Analysis uses public book descriptions and reviews. We haven’t independently read every book, and AI may miss nuance."} <button onClick={onFlag}>Flag it for review.</button></p>
         </aside>
         <button className="compare-link" onClick={onCompare}><span><Icon name="book" /> Compare with another book</span><Icon name="chevron" /></button>
       </div>
@@ -342,7 +400,7 @@ function Results({ onBack, onScan, onCompare, onFlag }: { onBack: () => void; on
           <button className="sheet-handle" onClick={() => setSelectedFlag(null)} aria-label="Close details" />
           <div className="sheet-title"><span><Icon name={selectedFlag.icon} /></span><div><small>CONTENT DETAIL</small><h2>{selectedFlag.name}</h2></div><span className={`status ${selectedFlag.tone}`}>{selectedFlag.status}</span></div>
           <div className="signal-pair"><div><small>PRESENCE</small><strong>{selectedFlag.presence}</strong><p>How often it appears</p></div><div><small>INTENSITY</small><strong>{selectedFlag.intensity}</strong><p>How explicit it is</p></div></div>
-          <div className="context-note"><span>What we found</span><p>{selectedFlag.context}</p><small>References: Chapters 8, 19 and 21 · May contain spoilers</small></div>
+          <div className="context-note"><span>What we found</span><p>{selectedFlag.context}</p>{!analysis && <small>References: Chapters 8, 19 and 21 · May contain spoilers</small>}</div>
           <div className="profile-reason"><Icon name="user" size={18} /><p><strong>Why you’re seeing this</strong>{profile.emphasis.includes(selectedFlag.name) ? `Prioritized by ${profile.name} for ${activeFamilyProfile.name}.` : `Shown as part of the objective analysis for ${activeFamilyProfile.name}.`}</p></div>
           <PrimaryButton onClick={() => setSelectedFlag(null)}>Got it</PrimaryButton>
           <button className="report-analysis" onClick={() => { setFeedbackSent(false); setFeedbackFlag(selectedFlag.name); setSelectedFlag(null); }}>Something looks wrong? Report analysis</button>
@@ -811,30 +869,104 @@ function AuthScreen({ mode, onBack, onSwitch, onComplete }: { mode: "login" | "s
   );
 }
 
-function BookstoreMode({ onBack, onResults, onCompare }: { onBack: () => void; onResults: () => void; onCompare: () => void }) {
-  const [scanned, setScanned] = useState(2);
+const barcodeHints = new Map([[DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.EAN_13]]]);
+
+function BookstoreMode({ onBack, onResults, onCompare, onFound }: { onBack: () => void; onResults: () => void; onCompare: () => void; onFound: (query: string) => void }) {
+  const [scanned] = useState(2);
   const [flash, setFlash] = useState(false);
   const [scanMode, setScanMode] = useState<"isbn" | "cover">("isbn");
-  const capture = () => {
-    setFlash(true);
-    window.setTimeout(() => { setFlash(false); setScanned((count) => count + 1); }, 350);
+  const [camera, setCamera] = useState<"starting" | "live" | "unavailable">("starting");
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [manualIsbn, setManualIsbn] = useState("");
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const scanModeRef = useRef(scanMode);
+  const foundRef = useRef(false);
+  scanModeRef.current = scanMode;
+
+  const finish = (query: string) => {
+    if (foundRef.current) return;
+    foundRef.current = true;
+    onFound(query);
   };
+
+  useEffect(() => {
+    let controls: IScannerControls | undefined;
+    let cancelled = false;
+    (async () => {
+      if (!navigator.mediaDevices?.getUserMedia || !videoRef.current) { setCamera("unavailable"); return; }
+      try {
+        const reader = new BrowserMultiFormatReader(barcodeHints, { delayBetweenScanAttempts: 150 });
+        controls = await reader.decodeFromConstraints({ video: { facingMode: { ideal: "environment" } } }, videoRef.current, (result) => {
+          if (!result || scanModeRef.current !== "isbn") return;
+          const text = result.getText();
+          if (isIsbn(text)) { setFlash(true); finish(cleanIsbn(text)); }
+        });
+        if (cancelled) controls.stop(); else setCamera("live");
+      } catch {
+        if (!cancelled) setCamera("unavailable");
+      }
+    })();
+    return () => { cancelled = true; controls?.stop(); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const captureCover = async () => {
+    const video = videoRef.current;
+    if (!video || camera !== "live" || busy) return;
+    setFlash(true);
+    window.setTimeout(() => setFlash(false), 350);
+    const scale = Math.min(1, 1280 / Math.max(video.videoWidth, video.videoHeight));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(video.videoWidth * scale);
+    canvas.height = Math.round(video.videoHeight * scale);
+    canvas.getContext("2d")?.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const image = canvas.toDataURL("image/jpeg", 0.85).split(",")[1];
+    setBusy(true);
+    setMessage("Reading the cover...");
+    try {
+      const cover = await identifyCover(image);
+      if (cover.found && cover.title) finish(`${cover.title} ${cover.author}`.trim());
+      else setMessage("We couldn’t read a title. Fill the frame with the cover and try again.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "We couldn’t read that cover.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const capture = () => {
+    if (scanMode === "cover") { void captureCover(); return; }
+    setMessage(camera === "live" ? "Barcodes scan automatically. Hold the ISBN barcode inside the frame." : null);
+  };
+
+  const submitManual = (event: FormEvent) => {
+    event.preventDefault();
+    if (isIsbn(manualIsbn)) finish(cleanIsbn(manualIsbn));
+    else setMessage("Enter the 10 or 13 digit ISBN printed above the barcode.");
+  };
+
   return (
     <main className={`screen bookstore-screen ${flash ? "captured" : ""}`}>
-      <header className="camera-header"><button className="icon-button" onClick={onBack} aria-label="Go back"><Icon name="arrow" /></button><div><strong>Rapid Scan</strong><span>ISBN or book cover</span></div><span className="offline-dot">READY</span></header>
-      <div className="camera-mode-switch" role="radiogroup" aria-label="Scan type"><button className={scanMode === "isbn" ? "selected" : ""} role="radio" aria-checked={scanMode === "isbn"} onClick={() => setScanMode("isbn")}><Icon name="scan" size={15} /> ISBN barcode</button><button className={scanMode === "cover" ? "selected" : ""} role="radio" aria-checked={scanMode === "cover"} onClick={() => setScanMode("cover")}><Icon name="book" size={15} /> Book cover</button></div>
-      <div className="camera-view">
+      <header className="camera-header"><button className="icon-button" onClick={onBack} aria-label="Go back"><Icon name="arrow" /></button><div><strong>Rapid Scan</strong><span>ISBN or book cover</span></div><span className="offline-dot">{camera === "live" ? "LIVE" : camera === "starting" ? "STARTING" : "NO CAMERA"}</span></header>
+      <div className="camera-mode-switch" role="radiogroup" aria-label="Scan type"><button className={scanMode === "isbn" ? "selected" : ""} role="radio" aria-checked={scanMode === "isbn"} onClick={() => { setScanMode("isbn"); setMessage(null); }}><Icon name="scan" size={15} /> ISBN barcode</button><button className={scanMode === "cover" ? "selected" : ""} role="radio" aria-checked={scanMode === "cover"} onClick={() => { setScanMode("cover"); setMessage(null); }}><Icon name="book" size={15} /> Book cover</button></div>
+      <div className={`camera-view camera-${camera}`}>
+        <video ref={videoRef} className="camera-feed" muted playsInline autoPlay aria-hidden="true" />
         <div className="camera-grain" />
-        {scanMode === "isbn" ? <div className="barcode-art"><i /><i /><i /><i /><i /><i /><i /><i /><i /></div> : <div className="cover-scan-art"><span>THE</span><strong>WILD<br />ROBOT</strong><i /><small>PETER BROWN</small></div>}
-        <div className={`scan-reticle ${scanMode}`}><span /><span /><span /><span /><div><Icon name={scanMode === "isbn" ? "scan" : "book"} size={18} /> Align {scanMode === "isbn" ? "an ISBN barcode" : "the entire book cover"}</div></div>
-        <p>{scanMode === "isbn" ? "Hold steady · Scans save automatically" : "Keep the title and author inside the frame"}</p>
+        {camera === "starting" && (scanMode === "isbn" ? <div className="barcode-art"><i /><i /><i /><i /><i /><i /><i /><i /><i /></div> : <div className="cover-scan-art"><span>THE</span><strong>WILD<br />ROBOT</strong><i /><small>PETER BROWN</small></div>)}
+        {camera !== "unavailable" && <div className={`scan-reticle ${scanMode}`}><span /><span /><span /><span /><div><Icon name={scanMode === "isbn" ? "scan" : "book"} size={18} /> Align {scanMode === "isbn" ? "an ISBN barcode" : "the entire book cover"}</div></div>}
+        {camera === "unavailable" ? <form className="camera-fallback" onSubmit={submitManual}>
+          <p>Camera isn’t available. Allow camera access in your browser settings, or type the ISBN.</p>
+          <div><input id="manual-isbn" inputMode="numeric" placeholder="ISBN, e.g. 9780064400558" aria-label="ISBN" value={manualIsbn} onChange={(event) => setManualIsbn(event.target.value)} /><button type="submit">Look up</button></div>
+        </form> : <p>{message || (scanMode === "isbn" ? "Hold steady · Barcodes scan automatically" : "Keep the title and author inside the frame, then tap the shutter")}</p>}
+        {camera === "unavailable" && message && <p className="camera-message" role="status">{message}</p>}
       </div>
       <div className="camera-controls">
         <div className="scan-tray">
           <div className="tray-covers"><i>W</i><i>G</i>{scanned > 2 && <i>C</i>}</div>
           <button onClick={onCompare}><span><strong>{scanned} books</strong><small>Comparison tray</small></span><Icon name="chevron" /></button>
         </div>
-        <div className="shutter-row"><button className="mini-camera-action" aria-label="Toggle light"><Icon name="sparkle" /></button><button className="shutter" onClick={capture} aria-label={scanMode === "isbn" ? "Capture barcode" : "Capture book cover"}><span /></button><button className="mini-camera-action" onClick={onResults} aria-label="Open last result"><Icon name="book" /></button></div>
+        <div className="shutter-row"><button className="mini-camera-action" aria-label="Toggle light" disabled><Icon name="sparkle" /></button><button className="shutter" onClick={capture} disabled={busy} aria-label={scanMode === "isbn" ? "Capture barcode" : "Capture book cover"}><span /></button><button className="mini-camera-action" onClick={onResults} aria-label="Open last result"><Icon name="book" /></button></div>
       </div>
     </main>
   );
@@ -872,8 +1004,19 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>("home");
   const [newProfile, setNewProfile] = useState(false);
   const [contactContext, setContactContext] = useState<"review" | "general">("general");
+  const [pendingQuery, setPendingQuery] = useState<string | null>(null);
+  const [book, setBook] = useState<Book | null>(null);
+  const [analysis, setAnalysis] = useState<Analysis | null>(null);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [lookupError, setLookupError] = useState<string | null>(null);
+  const [loadingStep, setLoadingStep] = useState(0);
+  const [returnScreen, setReturnScreen] = useState<Screen>("home");
 
-  const startBookAnalysis = () => {
+  // query: an ISBN or "title author". No query runs the built-in sample result.
+  const startBookAnalysis = (query?: string) => {
+    setPendingQuery(query ?? null);
+    setLookupError(null);
+    setReturnScreen(screen === "bookstore" ? "bookstore" : "home");
     try {
       const isAuthenticated = window.localStorage.getItem("pageclarity-authenticated") === "true";
       const profiles = JSON.parse(window.localStorage.getItem("pageclarity-profiles") || "[]");
@@ -893,9 +1036,45 @@ export default function App() {
 
   useEffect(() => {
     if (screen !== "loading") return;
-    const timer = window.setTimeout(() => setScreen("results"), 2200);
-    return () => window.clearTimeout(timer);
-  }, [screen]);
+    if (!pendingQuery) {
+      setBook(null);
+      setAnalysis(null);
+      setLoadingStep(1);
+      const timer = window.setTimeout(() => setScreen("results"), 2200);
+      return () => window.clearTimeout(timer);
+    }
+    let cancelled = false;
+    (async () => {
+      setLoadingStep(0);
+      setAnalysisError(null);
+      let found: Book | null = null;
+      try {
+        found = await lookupBook(pendingQuery);
+      } catch {
+        if (!cancelled) setLookupError("The book catalog isn’t reachable. Check your connection and try again.");
+        return;
+      }
+      if (cancelled) return;
+      if (!found) { setLookupError(`No book matched “${pendingQuery}”. Check the spelling or try the ISBN.`); return; }
+      setBook(found);
+      setAnalysis(null);
+      setLoadingStep(1);
+      try {
+        const result = await analyzeBook(found);
+        if (!cancelled) setAnalysis(result);
+      } catch (error) {
+        if (!cancelled) setAnalysisError(error instanceof Error ? error.message : "The analysis service isn’t reachable right now.");
+      }
+      if (!cancelled) setScreen("results");
+    })();
+    return () => { cancelled = true; };
+  }, [screen, pendingQuery]);
+
+  const retryAnalysis = () => {
+    if (!book) return;
+    setPendingQuery(book.isbn || `${book.title} ${book.authors.join(" ")}`);
+    setScreen("loading");
+  };
 
   useEffect(() => {
     try {
@@ -913,10 +1092,10 @@ export default function App() {
   return (
     <div className="app-shell">
       <div className="phone">
-        {screen === "home" && <><Home onScan={startBookAnalysis} onProfile={() => setScreen("settings")} onBookstore={() => setScreen("bookstore")} onLogin={() => setScreen("login")} onSignup={() => setScreen("signup")} /><TabBar active="home" navigate={setScreen} /></>}
+        {screen === "home" && <><Home onSearch={startBookAnalysis} onProfile={() => setScreen("settings")} onBookstore={() => setScreen("bookstore")} onLogin={() => setScreen("login")} onSignup={() => setScreen("signup")} /><TabBar active="home" navigate={setScreen} /></>}
         {screen === "guestSetup" && <GuestSetup onBack={() => setScreen("home")} onContinue={() => setScreen("loading")} />}
-        {screen === "loading" && <Loading />}
-        {screen === "results" && <Results onBack={() => setScreen("home")} onScan={startBookAnalysis} onCompare={() => setScreen("compare")} onFlag={() => { setContactContext("review"); setScreen("contact"); }} />}
+        {screen === "loading" && <Loading step={loadingStep} error={lookupError} onBack={() => { setLookupError(null); setScreen(returnScreen); }} />}
+        {screen === "results" && <Results book={book} analysis={analysis} analysisError={analysisError} onRetry={retryAnalysis} onBack={() => setScreen("home")} onScan={() => setScreen("bookstore")} onCompare={() => setScreen("compare")} onFlag={() => { setContactContext("review"); setScreen("contact"); }} />}
         {screen === "history" && <History navigate={setScreen} />}
         {screen === "settings" && <SettingsOverview navigate={setScreen} addProfile={() => { setNewProfile(true); setScreen("profile"); }} editProfile={() => { setNewProfile(false); setScreen("profile"); }} onLogin={() => setScreen("login")} onSignup={() => setScreen("signup")} onSignOut={signOut} />}
         {screen === "profile" && <ProfileEditor navigate={setScreen} isNew={newProfile} />}
@@ -927,7 +1106,7 @@ export default function App() {
         {screen === "contact" && <ContactPage context={contactContext} onBack={() => setScreen(contactContext === "review" ? "sources" : "privacy")} />}
         {screen === "login" && <AuthScreen mode="login" onBack={() => setScreen("settings")} onSwitch={() => setScreen("signup")} onComplete={() => setScreen("settings")} />}
         {screen === "signup" && <AuthScreen mode="signup" onBack={() => setScreen("settings")} onSwitch={() => setScreen("login")} onComplete={() => setScreen("settings")} />}
-        {screen === "bookstore" && <BookstoreMode onBack={() => setScreen("home")} onResults={startBookAnalysis} onCompare={() => setScreen("compare")} />}
+        {screen === "bookstore" && <BookstoreMode onBack={() => setScreen("home")} onResults={() => (book ? setScreen("results") : startBookAnalysis())} onCompare={() => setScreen("compare")} onFound={startBookAnalysis} />}
         {screen === "compare" && <Compare onBack={() => setScreen("results")} onScan={() => setScreen("bookstore")} />}
       </div>
     </div>

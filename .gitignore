@@ -2,3 +2,7 @@ node_modules
 dist
 *.zip
 preview-dist
+.env
+.env.local
+.env*.local
+.vercel
