@@ -8,11 +8,31 @@ const TABLE = "book_analyses";
 
 let supabase: SupabaseClient | null | undefined;
 
+/**
+ * Accepts the API URL ("https://<ref>.supabase.co") and the usual paste mistakes:
+ * surrounding spaces or quotes, a missing https://, a bare project ref, or a
+ * dashboard link ("https://supabase.com/dashboard/project/<ref>/...").
+ */
+export function normalizeSupabaseUrl(raw: string | undefined): string | undefined {
+  const value = raw?.trim().replace(/^["']|["']$/g, "").trim().replace(/\/+$/, "");
+  if (!value) return undefined;
+  const dashboard = value.match(/supabase\.com\/dashboard\/project\/([a-z0-9]+)/i);
+  if (dashboard) return `https://${dashboard[1].toLowerCase()}.supabase.co`;
+  if (/^[a-z0-9]{15,30}$/i.test(value)) return `https://${value.toLowerCase()}.supabase.co`;
+  const withScheme = /^https?:\/\//i.test(value) ? value : `https://${value}`;
+  try {
+    const url = new URL(withScheme);
+    return `${url.protocol}//${url.host}`;
+  } catch {
+    throw new Error(`SUPABASE_URL isn't a valid address. It should look like https://abcdefghijklmnop.supabase.co (Supabase -> Project Settings -> API -> Project URL).`);
+  }
+}
+
 /** Returns null when Supabase isn't configured, so caching is simply skipped. */
 function db(): SupabaseClient | null {
   if (supabase === undefined) {
-    const url = process.env.SUPABASE_URL;
-    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const url = normalizeSupabaseUrl(process.env.SUPABASE_URL);
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim().replace(/^["']|["']$/g, "");
     supabase = url && key ? createClient(url, key, { auth: { persistSession: false } }) : null;
   }
   return supabase;
