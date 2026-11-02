@@ -13,7 +13,7 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
-import { bookKey, cacheEnabled, getCachedKeys, saveAnalyses, type CacheRow } from "../api/_lib/cache.js";
+import { bookKey, cacheEnabled, checkConnection, getCachedKeys, saveAnalyses, type CacheRow } from "../api/_lib/cache.js";
 import { AnalysisSchema, MODEL, SYSTEM_PROMPT, analysisUserMessage, client, normalizeAnalysis } from "../api/_lib/claude.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -46,6 +46,8 @@ const readState = (): BatchState => {
 
 async function submit(): Promise<BatchState | null> {
   if (!cacheEnabled()) throw new Error("Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY first, or the results would have nowhere to go.");
+  await checkConnection();
+  console.log("Supabase connection OK.");
   const listed = readList();
   const saved = await getCachedKeys(listed.map((book) => book.key));
   const books = listed.filter((book) => !saved.has(book.key));

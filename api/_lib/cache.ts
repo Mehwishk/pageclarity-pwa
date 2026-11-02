@@ -65,6 +65,35 @@ export async function getCachedAnalysis(key: string): Promise<Analysis | null> {
   return (data?.analysis as Analysis | undefined) ?? null;
 }
 
+/** Explains a failed request: which server it tried and the network error behind "fetch failed". */
+function describeError(message: string): string {
+  if (!/fetch failed/i.test(message)) return message;
+  const host = (() => { try { return new URL(normalizeSupabaseUrl(process.env.SUPABASE_URL) || "").host; } catch { return "(unreadable)"; } })();
+  return `couldn't connect to ${host}. Check that SUPABASE_URL is your project's URL (Supabase -> Project Settings -> API) and that the project isn't paused.`;
+}
+
+/** Tries one tiny read so setup problems show up before any money is spent. */
+export async function checkConnection(): Promise<void> {
+  const client = db();
+  if (!client) throw new Error("SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is missing.");
+  let result;
+  try {
+    result = await client.from(TABLE).select("book_key").limit(1);
+  } catch (error) {
+    const cause = (error as { cause?: { code?: string } }).cause?.code;
+    throw new Error(`Supabase: ${describeError(String(error))}${cause ? ` (${cause})` : ""}`);
+  }
+  const { error } = result;
+  if (!error) return;
+  if (/fetch failed/i.test(error.message)) {
+    const cause = (error as unknown as { details?: string }).details;
+    throw new Error(`Supabase: ${describeError(error.message)}${cause ? ` Details: ${cause}` : ""}`);
+  }
+  if (error.code === "42P01" || /does not exist|schema cache/i.test(error.message)) throw new Error("Supabase: the book_analyses table doesn't exist yet. Run supabase/schema.sql in Supabase -> SQL Editor.");
+  if (/invalid api key|jwt|unauthorized|permission/i.test(error.message)) throw new Error("Supabase: the key was rejected. SUPABASE_SERVICE_ROLE_KEY must be the service_role (or sb_secret_) key, not the anon/publishable key.");
+  throw new Error(`Supabase: ${error.message}`);
+}
+
 export async function getCachedKeys(keys: string[]): Promise<Set<string>> {
   const client = db();
   if (!client || keys.length === 0) return new Set();
