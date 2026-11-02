@@ -918,7 +918,7 @@ function BookstoreMode({ onBack, onResults, onCompare, onFound }: { onBack: () =
     if (!video || camera !== "live" || busy) return;
     setFlash(true);
     window.setTimeout(() => setFlash(false), 350);
-    const scale = Math.min(1, 1280 / Math.max(video.videoWidth, video.videoHeight));
+    const scale = Math.min(1, 1024 / Math.max(video.videoWidth, video.videoHeight)); // smaller upload, still sharp enough to read a title
     const canvas = document.createElement("canvas");
     canvas.width = Math.round(video.videoWidth * scale);
     canvas.height = Math.round(video.videoHeight * scale);

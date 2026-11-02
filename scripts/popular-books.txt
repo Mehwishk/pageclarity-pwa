@@ -252,3 +252,320 @@ The Last Olympian | Rick Riordan
 Eragon | Christopher Paolini
 The Golden Compass | Philip Pullman
 The Princess Bride | William Goldman
+
+# ---- Added: more picture books ----
+The Creepy Crayon! | Aaron Reynolds
+Creepy Carrots! | Aaron Reynolds
+Creepy Pair of Underwear! | Aaron Reynolds
+Dragons Love Tacos | Adam Rubin
+The Book with No Pictures | B. J. Novak
+The Day You Begin | Jacqueline Woodson
+Each Kindness | Jacqueline Woodson
+The Invisible Boy | Trudy Ludwig
+Chrysanthemum | Kevin Henkes
+Lilly's Purple Plastic Purse | Kevin Henkes
+Knuffle Bunny | Mo Willems
+Leonardo, the Terrible Monster | Mo Willems
+Room on the Broom | Julia Donaldson
+Stick Man | Julia Donaldson
+Interrupting Chicken | David Ezra Stein
+Press Here | Hervé Tullet
+Not a Box | Antoinette Portis
+I Want My Hat Back | Jon Klassen
+This Is Not My Hat | Jon Klassen
+Sam and Dave Dig a Hole | Mac Barnett
+Extra Yarn | Mac Barnett
+The Wonderful Things You Will Be | Emily Winfield Martin
+The Very Busy Spider | Eric Carle
+The Grouchy Ladybug | Eric Carle
+Harold and the Purple Crayon | Crockett Johnson
+Make Way for Ducklings | Robert McCloskey
+Blueberries for Sal | Robert McCloskey
+Caps for Sale | Esphyr Slobodkina
+Madeline | Ludwig Bemelmans
+The Story of Ferdinand | Munro Leaf
+Sylvester and the Magic Pebble | William Steig
+Shrek! | William Steig
+Officer Buckle and Gloria | Peggy Rathmann
+Good Night, Gorilla | Peggy Rathmann
+Tikki Tikki Tembo | Arlene Mosel
+Miss Rumphius | Barbara Cooney
+The Little Engine That Could | Watty Piper
+Are You My Mother? | P. D. Eastman
+Go, Dog. Go! | P. D. Eastman
+How the Grinch Stole Christmas! | Dr. Seuss
+The Lorax | Dr. Seuss
+Horton Hears a Who! | Dr. Seuss
+One Fish Two Fish Red Fish Blue Fish | Dr. Seuss
+Fox in Socks | Dr. Seuss
+Click, Clack, Boo! | Doreen Cronin
+Giraffes Can't Dance | Giles Andreae
+The Pout-Pout Fish | Deborah Diesen
+Little Blue Truck | Alice Schertle
+Goodnight, Goodnight, Construction Site | Sherri Duskey Rinker
+Pete the Cat and His Four Groovy Buttons | Eric Litwin
+Bear Snores On | Karma Wilson
+Wemberly Worried | Kevin Henkes
+Ish | Peter H. Reynolds
+The Dot | Peter H. Reynolds
+Rosie Revere, Engineer | Andrea Beaty
+Iggy Peck, Architect | Andrea Beaty
+Ada Twist, Scientist | Andrea Beaty
+Hair Love | Matthew A. Cherry
+Thank You, Omu! | Oge Mora
+Dreamers | Yuyi Morales
+Alma and How She Got Her Name | Juana Martinez-Neal
+Hey, Little Ant | Phillip M. Hoose
+Stellaluna | Janell Cannon
+Verdi | Janell Cannon
+The True Story of the Three Little Pigs | Jon Scieszka
+The Stinky Cheese Man and Other Fairly Stupid Tales | Jon Scieszka
+Tacky the Penguin | Helen Lester
+Duck! Rabbit! | Amy Krouse Rosenthal
+Little Pea | Amy Krouse Rosenthal
+Pig the Pug | Aaron Blabey
+The Wonky Donkey | Craig Smith
+Grumpy Monkey | Suzanne Lang
+The Recess Queen | Alexis O'Neill
+A Bad Case of Stripes | David Shannon
+No, David! | David Shannon
+Owl Babies | Martin Waddell
+We're Going on a Bear Hunt | Michael Rosen
+The Paper Bag Princess | Robert Munsch
+Tar Beach | Faith Ringgold
+
+# ---- Added: early readers and chapter books ----
+Mercy Watson Goes for a Ride | Kate DiCamillo
+Bink and Gollie | Kate DiCamillo
+The Magic School Bus Inside the Human Body | Joanna Cole
+Cam Jansen and the Mystery of the Stolen Diamonds | David A. Adler
+The Absent Author | Ron Roy
+Rise of the Balloon Goons | Troy Cummings
+Rise of the Earth Dragon | Tracey West
+Bo's Magical New Friend | Rebecca Elliott
+Dragons and Marshmallows | Asia Citro
+Ricky Ricotta's Mighty Robot | Dav Pilkey
+The Adventures of Ook and Gluk | Dav Pilkey
+The Tale of Peter Rabbit | Beatrix Potter
+My Father's Dragon | Ruth Stiles Gannett
+The Littles | John Peterson
+The Chocolate Touch | Patrick Skene Catling
+Freckle Juice | Judy Blume
+Fudge-a-Mania | Judy Blume
+Mrs. Piggle-Wiggle | Betty MacDonald
+Clementine | Sara Pennypacker
+The Hundred Dresses | Eleanor Estes
+Encyclopedia Brown, Boy Detective | Donald J. Sobol
+The Enormous Crocodile | Roald Dahl
+George's Marvellous Medicine | Roald Dahl
+Esio Trot | Roald Dahl
+Danny the Champion of the World | Roald Dahl
+Fantastic Mr Fox | Roald Dahl
+The Magic Finger | Roald Dahl
+Hilo: The Boy Who Crashed to Earth | Judd Winick
+Investigators | John Patrick Green
+Narwhal: Unicorn of the Sea | Ben Clanton
+Lunch Lady and the Cyborg Substitute | Jarrett J. Krosoczka
+Kristy's Great Idea | Ann M. Martin
+Karen's Witch | Ann M. Martin
+Diary of an Awesome Friendly Kid | Jeff Kinney
+Rowley Jefferson's Awesome Friendly Adventure | Jeff Kinney
+Timmy Failure: Mistakes Were Made | Stephan Pastis
+Stick Dog | Tom Watson
+The Last Kids on Earth | Max Brallier
+Wayside School Is Falling Down | Louis Sachar
+There's a Boy in the Girls' Bathroom | Louis Sachar
+Fortunately, the Milk | Neil Gaiman
+The 13-Storey Treehouse | Andy Griffiths
+
+# ---- Added: middle grade ----
+The Tale of Magic | Chris Colfer
+The School for Good and Evil | Soman Chainani
+Fablehaven | Brandon Mull
+The Ruins of Gorlan | John Flanagan
+The Maze of Bones | Rick Riordan
+The Titan's Curse | Rick Riordan
+The Battle of the Labyrinth | Rick Riordan
+The Son of Neptune | Rick Riordan
+The Mark of Athena | Rick Riordan
+The Hidden Oracle | Rick Riordan
+Magnus Chase and the Sword of Summer | Rick Riordan
+The Chalice of the Gods | Rick Riordan
+Aru Shah and the End of Time | Roshani Chokshi
+The Last Olympian | Rick Riordan
+Charlie Bone and the Time Twister | Jenny Nimmo
+Gregor the Overlander | Suzanne Collins
+The Mysterious Benedict Society and the Perilous Journey | Trenton Lee Stewart
+Mr. Popper's Penguins | Richard Atwater
+The Wind in the Door | Madeleine L'Engle
+Redwall | Brian Jacques
+The Black Stallion | Walter Farley
+Misty of Chincoteague | Marguerite Henry
+Rascal | Sterling North
+The Incredible Journey | Sheila Burnford
+Lassie Come-Home | Eric Knight
+The Lemonade War | Jacqueline Davies
+Wonder: Auggie & Me | R. J. Palacio
+White Bird | R. J. Palacio
+The Wild Robot Protects | Peter Brown
+A Long Walk to Water | Linda Sue Park
+A Single Shard | Linda Sue Park
+Inside Out & Back Again | Thanhhà Lại
+Love That Dog | Sharon Creech
+The Year of Billy Miller | Kevin Henkes
+The War That Saved My Life | Kimberly Brubaker Bradley
+The War I Finally Won | Kimberly Brubaker Bradley
+Counting by 7s | Holly Goldberg Sloan
+Rules | Cynthia Lord
+Mockingbird | Kathryn Erskine
+Out of the Dust | Karen Hesse
+Island of the Aunts | Eva Ibbotson
+Journey to the River Sea | Eva Ibbotson
+The Secret of Platform 13 | Eva Ibbotson
+The Lion of Mars | Jennifer L. Holm
+Turtle in Paradise | Jennifer L. Holm
+The Fourteenth Goldfish | Jennifer L. Holm
+Sunny Side Up | Jennifer L. Holm
+Babymouse: Queen of the World! | Jennifer L. Holm
+The Trumpet of the Swan | E. B. White
+The Night Diary | Veera Hiranandani
+Starfish | Lisa Fipps
+The Remarkable Journey of Coyote Sunrise | Dan Gemeinhart
+Some Kind of Courage | Dan Gemeinhart
+Wolf Hollow | Lauren Wolk
+Beyond the Bright Sea | Lauren Wolk
+The Thing About Jellyfish | Ali Benjamin
+Okay for Now | Gary D. Schmidt
+The Wednesday Wars | Gary D. Schmidt
+Orbiting Jupiter | Gary D. Schmidt
+Brian's Winter | Gary Paulsen
+The River | Gary Paulsen
+Dogsong | Gary Paulsen
+Hoot | Carl Hiaasen
+Flush | Carl Hiaasen
+Chomp | Carl Hiaasen
+Al Capone Does My Shirts | Gennifer Choldenko
+The Candymakers | Wendy Mass
+Savvy | Ingrid Law
+The Underneath | Kathi Appelt
+Doll Bones | Holly Black
+The Field Guide | Tony DiTerlizzi
+Serafina and the Black Cloak | Robert Beatty
+Small Spaces | Katherine Arden
+The Jumbies | Tracey Baptiste
+The Vanderbeekers to the Rescue | Karina Yan Glaser
+Merci Suárez Can't Dance | Meg Medina
+Front Desk: Three Keys | Kelly Yang
+Class Act | Jerry Craft
+Twins | Varian Johnson
+Stepping Stones | Lucy Knisley
+Guts | Raina Telgemeier
+Ghosts | Raina Telgemeier
+Real Friends | Shannon Hale
+Best Friends | Shannon Hale
+The Cardboard Kingdom | Chad Sell
+Witch Boy | Molly Knox Ostertag
+When Stars Are Scattered | Victoria Jamieson
+The Okay Witch | Emma Steinkellner
+Cat Kid Comic Club: Perspectives | Dav Pilkey
+Dog Man: Unleashed | Dav Pilkey
+Dog Man: A Tale of Two Kitties | Dav Pilkey
+Diary of a Wimpy Kid: Rodrick Rules | Jeff Kinney
+Diary of a Wimpy Kid: The Last Straw | Jeff Kinney
+Diary of a Wimpy Kid: Dog Days | Jeff Kinney
+Big Nate Flips Out | Lincoln Peirce
+The Strange Case of Origami Yoda | Tom Angleberger
+Holes | Louis Sachar
+Small Steps | Louis Sachar
+Maximum Ride: The Angel Experiment | James Patterson
+Middle School, The Worst Years of My Life | James Patterson
+I Funny | James Patterson
+Bridge to Terabithia | Katherine Paterson
+The Great Gilly Hopkins | Katherine Paterson
+Jacob Have I Loved | Katherine Paterson
+Dear Mr. Henshaw | Beverly Cleary
+Ramona Quimby, Age 8 | Beverly Cleary
+Ramona and Her Father | Beverly Cleary
+The Penderwicks on Gardam Street | Jeanne Birdsall
+The Graveyard Book | Neil Gaiman
+The Wolves of Willoughby Chase | Joan Aiken
+The Evil Wizard Smallbone | Delia Sherman
+Princess Academy | Shannon Hale
+The Goose Girl | Shannon Hale
+Fairest | Gail Carson Levine
+The Two Princesses of Bamarre | Gail Carson Levine
+Howl's Moving Castle | Diana Wynne Jones
+The Neverending Story | Michael Ende
+Momo | Michael Ende
+The Little Prince | Antoine de Saint-Exupéry
+Pinocchio | Carlo Collodi
+The Velveteen Rabbit | Margery Williams
+Hello, Universe | Erin Entrada Kelly
+We Dream of Space | Erin Entrada Kelly
+The Bridge Home | Padma Venkatraman
+Harbor Me | Jacqueline Woodson
+Pashmina | Nidhi Chanani
+The Benefits of Being an Octopus | Ann Braden
+Song for a Whale | Lynne Kelly
+Stargazing | Jen Wang
+Allergic | Megan Wagner Lloyd
+Wildoak | C. C. Harrington
+
+# ---- Added: young adult ----
+The Ballad of Songbirds and Snakes | Suzanne Collins
+Sunrise on the Reaping | Suzanne Collins
+Insurgent | Veronica Roth
+The Scorch Trials | James Dashner
+The Selection | Kiera Cass
+Uglies | Scott Westerfeld
+Legend | Marie Lu
+Scythe | Neal Shusterman
+Unwind | Neal Shusterman
+Gathering Blue | Lois Lowry
+Messenger | Lois Lowry
+Son | Lois Lowry
+The Book of Three | Lloyd Alexander
+A Wizard of Earthsea | Ursula K. Le Guin
+The Subtle Knife | Philip Pullman
+The Amber Spyglass | Philip Pullman
+The Fellowship of the Ring | J. R. R. Tolkien
+Children of Blood and Bone | Tomi Adeyemi
+Shadow of the Fox | Julie Kagawa
+Percy Jackson's Greek Heroes | Rick Riordan
+Long Way Down | Jason Reynolds
+All American Boys | Jason Reynolds
+Dear Martin | Nic Stone
+Out of the Easy | Ruta Sepetys
+Between Shades of Gray | Ruta Sepetys
+Salt to the Sea | Ruta Sepetys
+I Am Malala | Malala Yousafzai
+Hidden Figures Young Readers' Edition | Margot Lee Shetterly
+Educated | Tara Westover
+Ready Player One | Ernest Cline
+The Martian | Andy Weir
+Project Hail Mary | Andy Weir
+Wonderstruck | Brian Selznick
+The Raven Boys | Maggie Stiefvater
+Miss Peregrine's Home for Peculiar Children | Ransom Riggs
+The Book of Lost Things | John Connolly
+A Monster Calls | Patrick Ness
+The Knife of Never Letting Go | Patrick Ness
+I'll Give You the Sun | Jandy Nelson
+Everything, Everything | Nicola Yoon
+They Both Die at the End | Adam Silvera
+Turtles All the Way Down | John Green
+Paper Towns | John Green
+An Abundance of Katherines | John Green
+Will Grayson, Will Grayson | John Green
+Anne of Avonlea | L. M. Montgomery
+Jane Eyre | Charlotte Brontë
+Pride and Prejudice | Jane Austen
+Of Mice and Men | John Steinbeck
+The Great Gatsby | F. Scott Fitzgerald
+The Catcher in the Rye | J. D. Salinger
+A Separate Peace | John Knowles
+The Old Man and the Sea | Ernest Hemingway
+Brave New World | Aldous Huxley
+The Chosen | Chaim Potok
+Brian's Return | Gary Paulsen
+The House on Mango Street | Sandra Cisneros
