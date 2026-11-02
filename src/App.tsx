@@ -1002,6 +1002,10 @@ function Compare({ onBack, onScan }: { onBack: () => void; onScan: () => void })
   );
 }
 
+type AnalysisOutcome =
+  | { kind: "lookupFailed"; message: string }
+  | { kind: "done"; book: Book; analysis: Analysis | null; error: string | null };
+
 export default function App() {
   const [screen, setScreen] = useState<Screen>("home");
   const [newProfile, setNewProfile] = useState(false);
@@ -1014,10 +1018,38 @@ export default function App() {
   const [loadingStep, setLoadingStep] = useState(0);
   const [returnScreen, setReturnScreen] = useState<Screen>("home");
 
+  // The lookup + analysis for the current query. It starts as soon as the query is
+  // known (even while a guest is still on the setup screen); the loading screen
+  // only waits for it to finish.
+  const jobRef = useRef<{ id: number; promise: Promise<AnalysisOutcome> } | null>(null);
+
+  const runAnalysis = (query: string) => {
+    const id = (jobRef.current?.id ?? 0) + 1;
+    const isCurrent = () => jobRef.current?.id === id;
+    setLoadingStep(0);
+    const promise = (async (): Promise<AnalysisOutcome> => {
+      let found: Book | null;
+      try {
+        found = await lookupBook(query);
+      } catch {
+        return { kind: "lookupFailed", message: "The book catalog isn’t reachable. Check your connection and try again." };
+      }
+      if (!found) return { kind: "lookupFailed", message: `No book matched “${query}”. Check the spelling or try the ISBN.` };
+      if (isCurrent()) setLoadingStep(1);
+      try {
+        return { kind: "done", book: found, analysis: await analyzeBook(found), error: null };
+      } catch (error) {
+        return { kind: "done", book: found, analysis: null, error: error instanceof Error ? error.message : "The analysis service isn’t reachable right now." };
+      }
+    })();
+    jobRef.current = { id, promise };
+  };
+
   // query: an ISBN or "title author". No query runs the built-in sample result.
   const startBookAnalysis = (query?: string) => {
     setPendingQuery(query ?? null);
     setLookupError(null);
+    if (query) runAnalysis(query); else jobRef.current = null;
     setReturnScreen(screen === "bookstore" ? "bookstore" : "home");
     try {
       const isAuthenticated = window.localStorage.getItem("pageclarity-authenticated") === "true";
@@ -1045,36 +1077,25 @@ export default function App() {
       const timer = window.setTimeout(() => setScreen("results"), 2200);
       return () => window.clearTimeout(timer);
     }
+    if (!jobRef.current) runAnalysis(pendingQuery);
+    const job = jobRef.current!;
     let cancelled = false;
-    (async () => {
-      setLoadingStep(0);
-      setAnalysisError(null);
-      let found: Book | null = null;
-      try {
-        found = await lookupBook(pendingQuery);
-      } catch {
-        if (!cancelled) setLookupError("The book catalog isn’t reachable. Check your connection and try again.");
-        return;
-      }
-      if (cancelled) return;
-      if (!found) { setLookupError(`No book matched “${pendingQuery}”. Check the spelling or try the ISBN.`); return; }
-      setBook(found);
-      setAnalysis(null);
-      setLoadingStep(1);
-      try {
-        const result = await analyzeBook(found);
-        if (!cancelled) setAnalysis(result);
-      } catch (error) {
-        if (!cancelled) setAnalysisError(error instanceof Error ? error.message : "The analysis service isn’t reachable right now.");
-      }
-      if (!cancelled) setScreen("results");
-    })();
+    job.promise.then((outcome) => {
+      if (cancelled || jobRef.current?.id !== job.id) return;
+      if (outcome.kind === "lookupFailed") { setLookupError(outcome.message); return; }
+      setBook(outcome.book);
+      setAnalysis(outcome.analysis);
+      setAnalysisError(outcome.error);
+      setScreen("results");
+    });
     return () => { cancelled = true; };
   }, [screen, pendingQuery]);
 
   const retryAnalysis = () => {
     if (!book) return;
-    setPendingQuery(book.isbn || `${book.title} ${book.authors.join(" ")}`);
+    const query = book.isbn || `${book.title} ${book.authors.join(" ")}`;
+    setPendingQuery(query);
+    runAnalysis(query);
     setScreen("loading");
   };
 
