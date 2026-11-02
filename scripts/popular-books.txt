@@ -1,0 +1,254 @@
+# Books to pre-analyze with `npm run library`. One per line: Title | Author
+# Add as many as you like. Books already saved in Supabase are skipped, so
+# re-running only pays for new lines. Lines starting with # are ignored.
+
+# Picture books and early readers
+Where the Wild Things Are | Maurice Sendak
+The Very Hungry Caterpillar | Eric Carle
+Goodnight Moon | Margaret Wise Brown
+The Cat in the Hat | Dr. Seuss
+Green Eggs and Ham | Dr. Seuss
+Oh, the Places You'll Go! | Dr. Seuss
+The Giving Tree | Shel Silverstein
+Where the Sidewalk Ends | Shel Silverstein
+Frog and Toad Are Friends | Arnold Lobel
+The Gruffalo | Julia Donaldson
+Corduroy | Don Freeman
+Curious George | H. A. Rey
+The Snowy Day | Ezra Jack Keats
+Chicka Chicka Boom Boom | Bill Martin Jr.
+Brown Bear, Brown Bear, What Do You See? | Bill Martin Jr.
+Llama Llama Red Pajama | Anna Dewdney
+Pete the Cat: I Love My White Shoes | Eric Litwin
+The Day the Crayons Quit | Drew Daywalt
+Don't Let the Pigeon Drive the Bus! | Mo Willems
+We Are in a Book! | Mo Willems
+The Rainbow Fish | Marcus Pfister
+Love You Forever | Robert Munsch
+The Kissing Hand | Audrey Penn
+Guess How Much I Love You | Sam McBratney
+Strega Nona | Tomie dePaola
+Owl Moon | Jane Yolen
+The Polar Express | Chris Van Allsburg
+Jumanji | Chris Van Allsburg
+Click, Clack, Moo: Cows That Type | Doreen Cronin
+If You Give a Mouse a Cookie | Laura Numeroff
+Last Stop on Market Street | Matt de la Peña
+Julián Is a Mermaid | Jessica Love
+And Tango Makes Three | Justin Richardson
+Mercy Watson to the Rescue | Kate DiCamillo
+There Is a Bird on Your Head! | Mo Willems
+
+# Early chapter books
+Dinosaurs Before Dark | Mary Pope Osborne
+Junie B. Jones and the Stupid Smelly Bus | Barbara Park
+The Boxcar Children | Gertrude Chandler Warner
+Captain Underpants | Dav Pilkey
+Dog Man | Dav Pilkey
+Cat Kid Comic Club | Dav Pilkey
+Ivy and Bean | Annie Barrows
+Judy Moody Was in a Mood | Megan McDonald
+Flat Stanley | Jeff Brown
+The Bad Guys | Aaron Blabey
+Diary of a Wimpy Kid | Jeff Kinney
+Dork Diaries | Rachel Renée Russell
+Big Nate: In a Class by Himself | Lincoln Peirce
+Stink: The Incredible Shrinking Kid | Megan McDonald
+Amelia Bedelia | Peggy Parish
+Nate the Great | Marjorie Weinman Sharmat
+Eva's Treetop Festival | Rebecca Elliott
+The Princess in Black | Shannon Hale
+Lost Treasure of the Emerald Eye | Geronimo Stilton
+Ramona the Pest | Beverly Cleary
+Beezus and Ramona | Beverly Cleary
+The Mouse and the Motorcycle | Beverly Cleary
+Henry Huggins | Beverly Cleary
+Tales of a Fourth Grade Nothing | Judy Blume
+Superfudge | Judy Blume
+Stuart Little | E. B. White
+
+# Middle grade classics
+Charlotte's Web | E. B. White
+The Trumpet of the Swan | E. B. White
+Matilda | Roald Dahl
+Charlie and the Chocolate Factory | Roald Dahl
+The BFG | Roald Dahl
+James and the Giant Peach | Roald Dahl
+The Witches | Roald Dahl
+Fantastic Mr. Fox | Roald Dahl
+The Twits | Roald Dahl
+The Lion, the Witch and the Wardrobe | C. S. Lewis
+The Magician's Nephew | C. S. Lewis
+Prince Caspian | C. S. Lewis
+The Hobbit | J. R. R. Tolkien
+Alice's Adventures in Wonderland | Lewis Carroll
+The Wonderful Wizard of Oz | L. Frank Baum
+Peter Pan | J. M. Barrie
+The Secret Garden | Frances Hodgson Burnett
+A Little Princess | Frances Hodgson Burnett
+Little House in the Big Woods | Laura Ingalls Wilder
+Little House on the Prairie | Laura Ingalls Wilder
+Anne of Green Gables | L. M. Montgomery
+Little Women | Louisa May Alcott
+Heidi | Johanna Spyri
+Black Beauty | Anna Sewell
+The Wind in the Willows | Kenneth Grahame
+Winnie-the-Pooh | A. A. Milne
+Pippi Longstocking | Astrid Lindgren
+The Borrowers | Mary Norton
+Mary Poppins | P. L. Travers
+The Phantom Tollbooth | Norton Juster
+A Wrinkle in Time | Madeleine L'Engle
+Bridge to Terabithia | Katherine Paterson
+Island of the Blue Dolphins | Scott O'Dell
+Hatchet | Gary Paulsen
+Where the Red Fern Grows | Wilson Rawls
+Old Yeller | Fred Gipson
+Sounder | William H. Armstrong
+Shiloh | Phyllis Reynolds Naylor
+Because of Winn-Dixie | Kate DiCamillo
+The Tale of Despereaux | Kate DiCamillo
+The Miraculous Journey of Edward Tulane | Kate DiCamillo
+Number the Stars | Lois Lowry
+The Giver | Lois Lowry
+Holes | Louis Sachar
+Sideways Stories from Wayside School | Louis Sachar
+From the Mixed-Up Files of Mrs. Basil E. Frankweiler | E. L. Konigsburg
+The Westing Game | Ellen Raskin
+Tuck Everlasting | Natalie Babbitt
+Mrs. Frisby and the Rats of NIMH | Robert C. O'Brien
+Harriet the Spy | Louise Fitzhugh
+Stone Fox | John Reynolds Gardiner
+Sarah, Plain and Tall | Patricia MacLachlan
+The Indian in the Cupboard | Lynne Reid Banks
+The Cricket in Times Square | George Selden
+Frindle | Andrew Clements
+Roll of Thunder, Hear My Cry | Mildred D. Taylor
+Walk Two Moons | Sharon Creech
+Esperanza Rising | Pam Muñoz Ryan
+Bud, Not Buddy | Christopher Paul Curtis
+The Watsons Go to Birmingham—1963 | Christopher Paul Curtis
+Maniac Magee | Jerry Spinelli
+Stargirl | Jerry Spinelli
+Julie of the Wolves | Jean Craighead George
+My Side of the Mountain | Jean Craighead George
+The Call of the Wild | Jack London
+Treasure Island | Robert Louis Stevenson
+The Jungle Book | Rudyard Kipling
+The Mysterious Benedict Society | Trenton Lee Stewart
+Ella Enchanted | Gail Carson Levine
+Inkheart | Cornelia Funke
+The Thief Lord | Cornelia Funke
+Artemis Fowl | Eoin Colfer
+Coraline | Neil Gaiman
+The Graveyard Book | Neil Gaiman
+The Invention of Hugo Cabret | Brian Selznick
+The One and Only Ivan | Katherine Applegate
+Wishtree | Katherine Applegate
+Crenshaw | Katherine Applegate
+
+# Popular modern middle grade
+Wonder | R. J. Palacio
+The Wild Robot | Peter Brown
+The Wild Robot Escapes | Peter Brown
+Out of My Mind | Sharon M. Draper
+Fish in a Tree | Lynda Mullaly Hunt
+Restart | Gordon Korman
+Ungifted | Gordon Korman
+Front Desk | Kelly Yang
+New Kid | Jerry Craft
+Smile | Raina Telgemeier
+Sisters | Raina Telgemeier
+Drama | Raina Telgemeier
+El Deafo | Cece Bell
+Roller Girl | Victoria Jamieson
+Amulet: The Stonekeeper | Kazu Kibuishi
+Bone: Out from Boneville | Jeff Smith
+The Dragonet Prophecy | Tui T. Sutherland
+Into the Wild | Erin Hunter
+The Lightning Thief | Rick Riordan
+The Sea of Monsters | Rick Riordan
+The Red Pyramid | Rick Riordan
+The Lost Hero | Rick Riordan
+Harry Potter and the Sorcerer's Stone | J. K. Rowling
+Harry Potter and the Chamber of Secrets | J. K. Rowling
+Harry Potter and the Prisoner of Azkaban | J. K. Rowling
+Harry Potter and the Goblet of Fire | J. K. Rowling
+Harry Potter and the Order of the Phoenix | J. K. Rowling
+Harry Potter and the Half-Blood Prince | J. K. Rowling
+Harry Potter and the Deathly Hallows | J. K. Rowling
+Percy Jackson's Greek Gods | Rick Riordan
+The Land of Stories: The Wishing Spell | Chris Colfer
+Keeper of the Lost Cities | Shannon Messenger
+The Girl Who Drank the Moon | Kelly Barnhill
+When You Reach Me | Rebecca Stead
+Brown Girl Dreaming | Jacqueline Woodson
+The Crossover | Kwame Alexander
+Echo | Pam Muñoz Ryan
+Pax | Sara Pennypacker
+A Wolf Called Wander | Rosanne Parry
+Refugee | Alan Gratz
+Ground Zero | Alan Gratz
+I Survived the Sinking of the Titanic, 1912 | Lauren Tarshis
+The Vanderbeekers of 141st Street | Karina Yan Glaser
+The Penderwicks | Jeanne Birdsall
+Escape from Mr. Lemoncello's Library | Chris Grabenstein
+Nevermoor: The Trials of Morrigan Crow | Jessica Townsend
+Greenglass House | Kate Milford
+The Unteachables | Gordon Korman
+Hello, Universe | Erin Entrada Kelly
+Merci Suárez Changes Gears | Meg Medina
+Other Words for Home | Jasmine Warga
+The Last Cuentista | Donna Barba Higuera
+Amari and the Night Brothers | B. B. Alston
+Tristan Strong Punches a Hole in the Sky | Kwame Mbalia
+The Bad Beginning | Lemony Snicket
+Ghost | Jason Reynolds
+Mr. Terupt Falls Again | Rob Buyea
+Because of Mr. Terupt | Rob Buyea
+George | Alex Gino
+Heartstopper | Alice Oseman
+
+# Young adult (often read by older middle schoolers)
+The Hunger Games | Suzanne Collins
+Catching Fire | Suzanne Collins
+Mockingjay | Suzanne Collins
+Divergent | Veronica Roth
+The Maze Runner | James Dashner
+Twilight | Stephenie Meyer
+The Fault in Our Stars | John Green
+Looking for Alaska | John Green
+The Hate U Give | Angie Thomas
+The Outsiders | S. E. Hinton
+The Book Thief | Markus Zusak
+The Perks of Being a Wallflower | Stephen Chbosky
+Speak | Laurie Halse Anderson
+Thirteen Reasons Why | Jay Asher
+Eleanor & Park | Rainbow Rowell
+Fangirl | Rainbow Rowell
+Six of Crows | Leigh Bardugo
+Shadow and Bone | Leigh Bardugo
+Throne of Glass | Sarah J. Maas
+A Court of Thorns and Roses | Sarah J. Maas
+Red Queen | Victoria Aveyard
+Cinder | Marissa Meyer
+To Kill a Mockingbird | Harper Lee
+Lord of the Flies | William Golding
+Animal Farm | George Orwell
+1984 | George Orwell
+Fahrenheit 451 | Ray Bradbury
+The Diary of a Young Girl | Anne Frank
+Night | Elie Wiesel
+The Boy in the Striped Pajamas | John Boyne
+Ender's Game | Orson Scott Card
+Aristotle and Dante Discover the Secrets of the Universe | Benjamin Alire Sáenz
+The Absolutely True Diary of a Part-Time Indian | Sherman Alexie
+Simon vs. the Homo Sapiens Agenda | Becky Albertalli
+One of Us Is Lying | Karen M. McManus
+A Good Girl's Guide to Murder | Holly Jackson
+We Were Liars | E. Lockhart
+The Inheritance Games | Jennifer Lynn Barnes
+The Last Olympian | Rick Riordan
+Eragon | Christopher Paolini
+The Golden Compass | Philip Pullman
+The Princess Bride | William Goldman

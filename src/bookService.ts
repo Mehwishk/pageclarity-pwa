@@ -57,7 +57,7 @@ function fromGoogle(item: GoogleVolume): Book | null {
   if (!info?.title) return null;
   const ids = info.industryIdentifiers || [];
   return {
-    title: info.subtitle ? `${info.title}: ${info.subtitle}` : info.title,
+    title: info.title, // subtitles are usually edition notes ("Full Color Edition"); leaving them out keeps saved results shared across editions
     authors: info.authors || [],
     isbn: ids.find((id) => id.type === "ISBN_13")?.identifier || ids.find((id) => id.type === "ISBN_10")?.identifier,
     year: info.publishedDate?.slice(0, 4),

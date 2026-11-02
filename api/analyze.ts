@@ -1,9 +1,12 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
-import { AnalysisSchema, BookInputSchema, CATEGORY_NAMES, MODEL, SYSTEM_PROMPT, client } from "./_lib/claude.js";
+import { bookKey, getCachedAnalysis, saveAnalyses } from "./_lib/cache.js";
+import { AnalysisSchema, BookInputSchema, MODEL, SYSTEM_PROMPT, analysisUserMessage, client, normalizeAnalysis } from "./_lib/claude.js";
 
 // POST /api/analyze  body: { title, authors[], isbn?, year?, publisher?, description? }
 // Returns the content analysis JSON for the six PageClarity categories.
+// Saved results are reused for every edition of the same book; Claude is only
+// called the first time a book is seen.
 export async function POST(request: Request): Promise<Response> {
   let body: unknown;
   try {
@@ -15,14 +18,9 @@ export async function POST(request: Request): Promise<Response> {
   if (!parsedBook.success) return Response.json({ error: "A book title is required." }, { status: 400 });
   const book = parsedBook.data;
 
-  const bookDetails = [
-    `Title: ${book.title}`,
-    book.authors.length ? `Author(s): ${book.authors.join(", ")}` : null,
-    book.isbn ? `ISBN: ${book.isbn}` : null,
-    book.year ? `Published: ${book.year}` : null,
-    book.publisher ? `Publisher: ${book.publisher}` : null,
-    book.description ? `Publisher description:\n${book.description}` : null,
-  ].filter(Boolean).join("\n");
+  const key = bookKey(book.title, book.authors);
+  const cached = await getCachedAnalysis(key);
+  if (cached) return Response.json(cached, { headers: { "X-PageClarity-Cache": "hit" } });
 
   try {
     const response = await client.beta.messages.parse({
@@ -32,20 +30,16 @@ export async function POST(request: Request): Promise<Response> {
       fallbacks: "default",
       output_config: { effort: "medium", format: betaZodOutputFormat(AnalysisSchema) },
       system: SYSTEM_PROMPT,
-      messages: [{ role: "user", content: `Analyze this book:\n\n${bookDetails}` }],
+      messages: [{ role: "user", content: analysisUserMessage(book) }],
     });
 
     if (response.stop_reason === "refusal" || !response.parsed_output) {
       return Response.json({ error: "We couldn't analyze this book right now." }, { status: 502 });
     }
 
-    // Keep the categories in the app's fixed order, one entry each.
-    const analysis = response.parsed_output;
-    analysis.categories = CATEGORY_NAMES.map((name) => analysis.categories.find((item) => item.name === name) ?? {
-      name, status: "None" as const, presence: "None" as const, intensity: "None" as const, context: "Not assessed.",
-    });
-    analysis.conversationStarters = analysis.conversationStarters.slice(0, 2);
-    return Response.json(analysis, { headers: { "Cache-Control": "s-maxage=86400" } });
+    const analysis = normalizeAnalysis(response.parsed_output);
+    await saveAnalyses([{ book_key: key, title: book.title, author: book.authors[0] || "", isbn: book.isbn, analysis, model: response.model, source: "live" }]);
+    return Response.json(analysis, { headers: { "X-PageClarity-Cache": "miss" } });
   } catch (error) {
     if (error instanceof Anthropic.RateLimitError) {
       return Response.json({ error: "Too many requests. Try again in a minute." }, { status: 429 });

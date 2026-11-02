@@ -51,3 +51,27 @@ Rules:
 - "context" is one or two plain sentences on what happens and how it is handled. No graphic detail, and avoid major spoilers where you can.
 - Base the analysis on what you actually know about this specific book. If you do not recognize it, or only know it vaguely, set known to false and confidence to "low", rely only on the provided description, and say in the summary that the analysis is limited. Never invent plot details.
 - Give exactly two conversation starters.`;
+
+/** The user message for one book. Shared by the live endpoint and the batch script. */
+export function analysisUserMessage(book: BookInput): string {
+  const details = [
+    `Title: ${book.title}`,
+    book.authors.length ? `Author(s): ${book.authors.join(", ")}` : null,
+    book.isbn ? `ISBN: ${book.isbn}` : null,
+    book.year ? `Published: ${book.year}` : null,
+    book.publisher ? `Publisher: ${book.publisher}` : null,
+    book.description ? `Publisher description:\n${book.description}` : null,
+  ].filter(Boolean).join("\n");
+  return `Analyze this book:\n\n${details}`;
+}
+
+/** Puts categories in the app's fixed order (one each) and keeps two conversation starters. */
+export function normalizeAnalysis(analysis: Analysis): Analysis {
+  return {
+    ...analysis,
+    categories: CATEGORY_NAMES.map((name) => analysis.categories.find((item) => item.name === name) ?? {
+      name, status: "None" as const, presence: "None" as const, intensity: "None" as const, context: "Not assessed.",
+    }),
+    conversationStarters: analysis.conversationStarters.slice(0, 2),
+  };
+}

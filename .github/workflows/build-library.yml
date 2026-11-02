@@ -1,0 +1,26 @@
+name: Build book library
+
+# Pre-analyzes the books in scripts/popular-books.txt with Claude's Batch API
+# (half price) and saves the results to Supabase. Books already saved are
+# skipped, so re-running only pays for new lines.
+# Run it from GitHub: Actions -> Build book library -> Run workflow.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-library:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330 # batches usually finish within an hour; the limit is 24h
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run library -- run
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

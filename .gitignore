@@ -6,3 +6,4 @@ preview-dist
 .env.local
 .env*.local
 .vercel
+scripts/.library-batch.json

@@ -56,8 +56,13 @@ Cover mode: shutter -> POST /api/identify-cover (photo -> title/author) -> same 
 ```
 
 - `api/_lib/claude.ts` holds the model, the system prompt and the zod schema for the analysis.
+- **Saved results:** `api/_lib/cache.ts` stores each analysis in Supabase table `book_analyses` (schema in `supabase/schema.sql`),
+  keyed by `bookKey(title, authors)`: one row per book, shared by all editions. `/api/analyze` checks it before calling Claude.
+  Caching turns itself off when the Supabase env vars are missing. Never store child or parent data there.
+- **Pre-built library:** `npm run library -- submit|status|collect|run` sends `scripts/popular-books.txt` to the Batch API
+  (half price) and saves results; already-saved books are skipped. Also runnable from GitHub Actions ("Build book library").
 - Profile score on results is computed from the analysis (status weights, doubled for emphasized categories).
-- Env vars (see `.env.example`): `ANTHROPIC_API_KEY` (server only), optional `VITE_GOOGLE_BOOKS_KEY`, optional `VITE_API_BASE`.
+- Env vars (see `.env.example`): `ANTHROPIC_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (all server only), optional `VITE_GOOGLE_BOOKS_KEY`, optional `VITE_API_BASE`.
 - The camera needs HTTPS and a real browser; it does not work inside the claude.ai preview link.
 
 ## CSS System
@@ -234,6 +239,6 @@ Profile sensitivity key for LGBTQ+ is "Homosexuality" (not "LGBTQ+ Themes") — 
 - ~~Google Books API~~ and ~~Claude API analysis~~ — done (see Scan & Analysis Pipeline)
 - Save real results to History (`pageclarity-history`) and the compare tray
 - Rate-limit `/api/*` before public launch (anyone can call them and spend API credit)
-- Set up **Supabase** — cache analysis results, real auth, sync profiles across devices
+- ~~Supabase result caching~~ — done. Still to do with Supabase: real auth, sync profiles across devices
 - COPPA compliance audit — no child PII collected or stored server-side
 - Connect **pageclarity.app** domain + deploy to production
