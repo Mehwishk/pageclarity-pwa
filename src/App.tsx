@@ -282,6 +282,8 @@ function Results({ onBack, onScan, onCompare, onFlag, book, analysis, analysisEr
     const score = realScore(lens.emphasis);
     return { ...lens, score, verdict: realVerdict(score) };
   };
+  const [coverFailed, setCoverFailed] = useState(false);
+  const showCover = Boolean(book?.coverUrl) && !coverFailed;
   const clearCount = resultCategories.filter((item) => item.status === "None").length;
   const displayTitle = book?.title || "Charlotte’s Web";
   const displayAuthor = book ? book.authors.join(", ") || "Unknown author" : "E. B. White";
@@ -341,7 +343,7 @@ function Results({ onBack, onScan, onCompare, onFlag, book, analysis, analysisEr
       <div className="scroll-content">
         <section className="result-hero">
           <div className="result-backdrop"><span>{displayTitle.toUpperCase()}</span></div>
-          {book ? <div className={`book-cover ${book.coverUrl ? "has-image" : ""}`}>{book.coverUrl ? <img src={book.coverUrl} alt={`Cover of ${book.title}`} /> : <><Icon name="book" size={34} /><strong>{book.title.toUpperCase()}</strong><small>{displayAuthor.toUpperCase()}</small></>}</div>
+          {book ? <div className={`book-cover ${showCover ? "has-image" : ""}`}>{showCover ? <img src={book.coverUrl} alt={`Cover of ${book.title}`} onError={() => setCoverFailed(true)} /> : <><Icon name="book" size={34} /><strong>{book.title.toUpperCase()}</strong><small>{displayAuthor.toUpperCase()}</small></>}</div>
             : <div className="book-cover"><span>CHARLOTTE’S</span><Icon name="sparkle" size={34} /><strong>WEB</strong><small>E. B. WHITE</small></div>}
           <div className="book-info"><span className="eyebrow">{book ? (analysis ? "ANALYSIS COMPLETE" : "BOOK FOUND") : "SAMPLE ANALYSIS"}</span><h1>{book ? book.title : <>Charlotte’s<br />Web</>}</h1><p>{book ? [displayAuthor, book.year].filter(Boolean).join(" · ") : "E. B. White · 1952"}</p>{(analysis || !book) && <span className="age-badge">{guestContext ? `Viewed for age ${guestContext.age}` : `Best for ages ${analysis?.ageRange || "8–12"}`}</span>}</div>
         </section>
